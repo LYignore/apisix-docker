@@ -20,6 +20,7 @@ ARG APISIX_DASHBOARD_VERSION=release/2.8
 
 RUN set -x \
     && apk add --no-cache --virtual .builddeps git \
+    && ls -al /usr/local \
     && git clone https://github.com/apache/apisix-dashboard.git -b ${APISIX_DASHBOARD_VERSION} /usr/local/apisix-dashboard \
     && cd /usr/local/apisix-dashboard && git clean -Xdf \
     && rm -f ./.githash && git log --pretty=format:"%h" -1 > ./.githash
@@ -38,7 +39,7 @@ RUN if [ "$ENABLE_PROXY" = "true" ] ; then go env -w GOPROXY=https://goproxy.io,
 
 FROM node:14-alpine as fe-builder
 
-ARG ENABLE_PROXY=false
+ARG ENABLE_PROXY=true
 
 WORKDIR /usr/local/apisix-dashboard
 
@@ -46,7 +47,7 @@ COPY --from=pre-build /usr/local/apisix-dashboard .
 
 WORKDIR /usr/local/apisix-dashboard/web
 
-RUN if [ "$ENABLE_PROXY" = "true" ] ; then yarn config set registry https://registry.npm.taobao.org/ ; fi \
+RUN if [[ "$ENABLE_PROXY" = "true" ]] ; then yarn config set registry https://registry.npm.taobao.org/ ; fi \
     && yarn install \
     && yarn build
 

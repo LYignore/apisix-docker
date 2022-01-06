@@ -30,13 +30,13 @@ build-on-centos:
 
 ### build-on-alpine:      Build apache/apisix:xx-alpine image
 build-on-alpine:
-	docker build -t $(IMAGE_NAME):$(APISIX_VERSION)-alpine -f ./alpine/Dockerfile .
+	docker buildx build --push -t $(IMAGE_NAME):$(APISIX_VERSION)-alpine --platform linux/amd64,linux/arm64 -f ./alpine/Dockerfile .
 
 ### build-on-alpine-local:      Build apache/apisix:xx-alpine-local image
 # Actually it is not build on certain version but on local code
 # Use this name (in the same patterns with others) for convenient CI
 build-on-alpine-local:
-	docker build -t $(IMAGE_NAME):$(APISIX_VERSION)-alpine-local --build-arg APISIX_PATH=${APISIX_PATH} -f ./alpine-local/Dockerfile .
+	docker buildx build --push -t $(IMAGE_NAME):$(APISIX_VERSION)-alpine-local --platform linux/amd64,linux/arm64 --build-arg APISIX_PATH=${APISIX_PATH} -f ./alpine-local/Dockerfile .
 
 ### push-on-centos:       Push apache/apisix:xx-centos image
 # centos not support multiarch since it reply on x86 rpm package
@@ -54,11 +54,11 @@ push-multiarch-on-alpine:
 
 ### build-on-alpine-cn:		 Build apache/apisix:xx-alpine image (for chinese)
 build-on-alpine-cn:
-	docker build -t $(IMAGE_NAME):${APISIX_VERSION}-alpine --build-arg APISIX_VERSION=${APISIX_VERSION} --build-arg ENABLE_PROXY=true -f alpine/Dockerfile alpine
+	docker buildx build --push -t $(IMAGE_NAME):${APISIX_VERSION}-alpine --platform linux/amd64,linux/arm64 --build-arg APISIX_VERSION=${APISIX_VERSION} --build-arg ENABLE_PROXY=true -f alpine/Dockerfile alpine
 
 ### build-all-in-one:		 Build All in one Docker container for Apache APISIX
 build-all-in-one:
-	docker build -t $(IMAGE_NAME):whole -f ./all-in-one/apisix/Dockerfile .
+	docker buildx build --push -t $(IMAGE_NAME):whole  --platform linux/amd64,linux/arm64 -f ./all-in-one/apisix/Dockerfile .
 
 ### save-centos-tar:      tar apache/apisix:xx-centos image
 save-centos-tar:
@@ -72,7 +72,7 @@ save-alpine-tar:
 
 ### build-dashboard:	Build apache/dashboard:tag image
 build-dashboard:
-	docker build -t $(APISIX_DASHBOARD_IMAGE_NAME):$(APISIX_DASHBOARD_VERSION) -f ./dashboard/Dockerfile .
+	docker buildx build --push -t $(APISIX_DASHBOARD_IMAGE_NAME):$(APISIX_DASHBOARD_VERSION) --platform linux/amd64,linux/arm64 -f ./dashboard/Dockerfile .
 
 ### push-dashboard:     Push apache/dashboard:tag image
 push-dashboard:
